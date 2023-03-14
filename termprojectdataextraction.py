@@ -116,7 +116,7 @@ for t in daterange:
     pc.sign_item(first_item).assets
 
     items = search.get_all_items()
-    print(len(t,'items: ',items))
+    print(t,'items: ',len(items))
     charts = charts+items
 
 print('Length total item set:',len(charts))
@@ -126,6 +126,7 @@ ds = stackstac.stack(planetary_computer.sign(charts), epsg=6207) # Nepal coordin
 
 ##################################################################
 # Compute
+print('start computing')
 with dask.diagnostics.ProgressBar():
     ts = ds.compute()
 
