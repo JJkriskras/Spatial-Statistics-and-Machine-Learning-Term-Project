@@ -63,6 +63,7 @@ aoi_KV = { # aoi Kachenjunga Valley
   ]
 }
 
+
 #########################################################3
 # 1984 only has 1 band, so date is increased
 daterange1 = {"interval": ["1985-08-22T00:00:00Z", "1985-11-01T00:00:00Z"]}
@@ -72,54 +73,55 @@ daterange = [
     {"interval": ["2014-08-22T00:00:00Z", "2014-11-01T00:00:00Z"]},
     {"interval": ["2022-08-22T00:00:00Z", "2022-11-01T00:00:00Z"]}]
 
-##########################################################
-catalog = Client.open(
-  "https://planetarycomputer.microsoft.com/api/stac/v1"
-)
-# Define your search with CQL2 syntax
-search = catalog.search(filter_lang="cql2-json", filter={
-  "op": "and",
-  "args": [
-    {"op": "s_intersects", "args": [{"property": "geometry"}, aoi_EMV]},
-    {"op": "anyinteracts", "args": [{"property": "datetime"}, daterange1]},
-    {"op": "=", "args": [{"property": "collection"}, "landsat-c2-l2"]},
-    {"op": "<=", "args": [{"property": "eo:cloud_cover"}, 5]}
-  ]
-})
-
-first_item = next(search.get_items())
-pc.sign_item(first_item).assets
-
-charts = search.get_all_items()
-print('1885 items:',len(charts))
-#-------------------------------------------
-for t in daterange:
-    # Search against the Planetary Computer STAC API
-    catalog = Client.open(
-        "https://planetarycomputer.microsoft.com/api/stac/v1"
+def importdata(aoi, daterange):
+    count = 0
+    for t in daterange:
+        if count != 0:
+            catalog = Client.open(
+                "https://planetarycomputer.microsoft.com/api/stac/v1")
+                # Define your search with CQL2 syntax
+                search = catalog.search(filter_lang="cql2-json", filter={
+                "op": "and", 
+                "args": [ {"op": "s_intersects", "args": [{"property": "geometry"}, aoi_EMV]},
+                         {"op": "anyinteracts", "args": [{"property": "datetime"}, daterange1]},
+                         {"op": "=", "args": [{"property": "collection"}, "landsat-c2-l2"]},
+                         {"op": "<=", "args": [{"property": "eo:cloud_cover"}, 2]}
+                         ]
+                        }
+                    )
+            first_item = next(search.get_items())
+            pc.sign_item(first_item).assets
+            charts = search.get_all_items()
+            print('t',len(charts))
+            continue
+        #########################
+         # Search against the Planetary Computer STAC API
+         catalog = Client.open(
+            "https://planetarycomputer.microsoft.com/api/stac/v1")
+        # Define your search with CQL2 syntax
+        search = catalog.search(filter_lang="cql2-json", filter={
+                "op": "and",
+                "args": [
+                    {"op": "s_intersects", "args": [{"property": "geometry"}, aoi_EMV]},
+                    {"op": "anyinteracts", "args": [{"property": "datetime"}, t]},
+                    {"op": "=", "args": [{"property": "collection"}, "landsat-c2-l2"]},
+                    # data cant process more than k-amount of bands so cloud coverage can be set to almost 0
+                    {"op": "<=", "args": [{"property": "eo:cloud_cover"}, 2]} 
+                ]
+            }  
         )
-    
-    # Define your search with CQL2 syntax
-    search = catalog.search(filter_lang="cql2-json", filter={
-        "op": "and",
-        "args": [
-            {"op": "s_intersects", "args": [{"property": "geometry"}, aoi_EMV]},
-            {"op": "anyinteracts", "args": [{"property": "datetime"}, t]},
-            {"op": "=", "args": [{"property": "collection"}, "landsat-c2-l2"]},
-            # data cant process more than k-amount of bands so cloud coverage can be set to almost 0
-            {"op": "<=", "args": [{"property": "eo:cloud_cover"}, 2]} 
-        ]
-        }
-    )
 
-    first_item = next(search.get_items())
-    pc.sign_item(first_item).assets
+        first_item = next(search.get_items())
+        pc.sign_item(first_item).assets
 
-    items = search.get_all_items()
-    print(t,'items: ',len(items))
-    charts = charts+items
+        items = search.get_all_items()
+        print(t,'items: ',len(items))
+        charts = charts+items
 
-print('Length total item set:',len(charts))
+    print('Length total item set:',len(charts))     
+
+
+
 
 ####################################################################3
 ds = stackstac.stack(planetary_computer.sign(charts), epsg=6207) # Nepal coordinate system
