@@ -66,41 +66,47 @@ aoi_KV = { # aoi Kachenjunga Valley
 
 #########################################################3
 # 1984 only has 1 band, so date is increased
-daterange1 = {"interval": ["1985-08-22T00:00:00Z", "1985-11-01T00:00:00Z"]}
-daterange = [ 
-    {"interval": ["1994-08-22T00:00:00Z", "1994-11-01T00:00:00Z"]},
-    {"interval": ["2004-08-22T00:00:00Z", "2004-11-01T00:00:00Z"]},
-    {"interval": ["2014-08-22T00:00:00Z", "2014-11-01T00:00:00Z"]},
-    {"interval": ["2022-08-22T00:00:00Z", "2022-11-01T00:00:00Z"]}]
+daterange = [
+    {"interval": ["1985-09-01T00:00:00Z", "1985-11-01T00:00:00Z"]},
+    {"interval": ["1990-09-01T00:00:00Z", "1990-11-01T00:00:00Z"]},
+    {"interval": ["1995-09-01T00:00:00Z", "1995-11-01T00:00:00Z"]},
+    {"interval": ["2000-09-01T00:00:00Z", "2000-11-01T00:00:00Z"]},
+    {"interval": ["2005-09-01T00:00:00Z", "2005-11-01T00:00:00Z"]},
+    {"interval": ["2010-09-01T00:00:00Z", "2010-11-01T00:00:00Z"]},
+    {"interval": ["2015-09-01T00:00:00Z", "2015-11-01T00:00:00Z"]},
+    {"interval": ["2020-09-01T00:00:00Z", "2020-11-01T00:00:00Z"]},
+    {"interval": ["2022-09-01T00:00:00Z", "2022-11-01T00:00:00Z"]}]
 
 def importdata(aoi, daterange):
-    count = 0
-    for t in daterange:
-        if count != 0:
-            catalog = Client.open(
-                "https://planetarycomputer.microsoft.com/api/stac/v1")
-                # Define your search with CQL2 syntax
-                search = catalog.search(filter_lang="cql2-json", filter={
-                "op": "and", 
-                "args": [ {"op": "s_intersects", "args": [{"property": "geometry"}, aoi_EMV]},
-                         {"op": "anyinteracts", "args": [{"property": "datetime"}, daterange1]},
-                         {"op": "=", "args": [{"property": "collection"}, "landsat-c2-l2"]},
-                         {"op": "<=", "args": [{"property": "eo:cloud_cover"}, 2]}
-                         ]
-                        }
-                    )
-            first_item = next(search.get_items())
-            pc.sign_item(first_item).assets
-            charts = search.get_all_items()
-            print('t',len(charts))
-            continue
+    catalog = Client.open(
+        "https://planetarycomputer.microsoft.com/api/stac/v1"
+        )
+    # Define your search with CQL2 syntax
+    search = catalog.search(filter_lang="cql2-json", filter={
+        "op": "and",
+        "args": [{"op": "s_intersects", "args": [{"property": "geometry"}, aoi_EMV]},
+                {"op": "anyinteracts", "args": [{"property": "datetime"}, daterange[0]]},
+                {"op": "=", "args": [{"property": "collection"}, "landsat-c2-l2"]},
+                {"op": "<=", "args": [{"property": "eo:cloud_cover"}, 2]}
+                ]
+        }
+    )
+
+
+    first_item = next(search.get_items())
+    pc.sign_item(first_item).assets
+
+    charts = search.get_all_items()
+    print('1885 items:',len(charts))
+               
         #########################
+    for t in daterange[1:]:
          # Search against the Planetary Computer STAC API
-         catalog = Client.open(
+        catalog = Client.open(
             "https://planetarycomputer.microsoft.com/api/stac/v1")
         # Define your search with CQL2 syntax
         search = catalog.search(filter_lang="cql2-json", filter={
-                "op": "and",
+            "op": "and",
                 "args": [
                     {"op": "s_intersects", "args": [{"property": "geometry"}, aoi_EMV]},
                     {"op": "anyinteracts", "args": [{"property": "datetime"}, t]},
@@ -120,7 +126,7 @@ def importdata(aoi, daterange):
 
     print('Length total item set:',len(charts))     
 
-
+charts = importdata(aoi_EMV, daterange)
 
 
 ####################################################################3
