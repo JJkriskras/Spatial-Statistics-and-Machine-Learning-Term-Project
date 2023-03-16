@@ -97,7 +97,7 @@ def importdata(aoi, daterange):
     pc.sign_item(first_item).assets
 
     charts = search.get_all_items()
-    print('1885 items:',len(charts))
+    print(daterange[0],len(charts))
                
         #########################
     for t in daterange[1:]:
