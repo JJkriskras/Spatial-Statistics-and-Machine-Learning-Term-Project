@@ -59,7 +59,6 @@ def importdata(aoi, daterange):
                     {"op": "s_intersects", "args": [{"property": "geometry"}, aoi]},
                     {"op": "anyinteracts", "args": [{"property": "datetime"}, t]},
                     {"op": "=", "args": [{"property": "collection"}, "landsat-c2-l2"]},
-                    # data cant process more than k-amount of bands so cloud coverage can be set to almost 0
                     {"op": "<=", "args": [{"property": "eo:cloud_cover"}, 20]} 
                 ]
             }  
@@ -137,9 +136,9 @@ aoi_BMV = { #aoi Everest and Barun/Makalu national park polygon
 }
 #------------------------------------------------------
 daterange = [
-    #{"interval": ["1983-09-01T00:00:00Z", "1983-11-01T00:00:00Z"]}, geen data
-    #{"interval": ["1986-09-01T00:00:00Z", "1986-11-01T00:00:00Z"]}, geen data
-    #{"interval": ["1989-08-01T00:00:00Z", "1989-11-01T00:00:00Z"]}, geen data
+    #{"interval": ["1983-09-01T00:00:00Z", "1983-11-01T00:00:00Z"]}, no data
+    #{"interval": ["1986-09-01T00:00:00Z", "1986-11-01T00:00:00Z"]}, no data
+    #{"interval": ["1989-08-01T00:00:00Z", "1989-11-01T00:00:00Z"]}, no data
     {"interval": ["1992-09-01T00:00:00Z", "1992-11-01T00:00:00Z"]}, # 1
     {"interval": ["1995-09-01T00:00:00Z", "1995-11-01T00:00:00Z"]}, # 2
     {"interval": ["1998-09-01T00:00:00Z", "1998-11-01T00:00:00Z"]}, # 3
