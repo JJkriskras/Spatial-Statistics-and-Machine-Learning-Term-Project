@@ -83,7 +83,7 @@ def create_file(ds, format):
         swir = ds.sel(band = 'swir16')
         NDSI = (green - swir) / (green + swir)
         resampledNDSI = NDSI.resample(time="YS")\
-            .median("time", keep_attrs=True) # the most frequent value
+            .modes("time", keep_attrs=True) # the most frequent value
         
         with dask.diagnostics.ProgressBar():
             ts = resampledNDSI.compute()
@@ -96,7 +96,7 @@ def create_file(ds, format):
         nir = ds.sel(band = 'nir08')
         NDWI = (green - nir) / (green + nir)
         resampledNDWI = NDWI.resample(time="YS")\
-            .median("time", keep_attrs=True) # the most frequent value
+            .modes("time", keep_attrs=True) # the most frequent value
         
         with dask.diagnostics.ProgressBar():
             ts = resampledNDWI.compute()
@@ -109,7 +109,7 @@ def create_file(ds, format):
         red = ds.sel(band = 'red')
         NDGI = (green - red) / (green + red)
         resampledNDGI = NDGI.resample(time="YS")\
-            .median("time", keep_attrs=True) # the most frequent value
+            .modes("time", keep_attrs=True) # the most frequent value
         
         with dask.diagnostics.ProgressBar():
             ts = resampledNDGI.compute()
