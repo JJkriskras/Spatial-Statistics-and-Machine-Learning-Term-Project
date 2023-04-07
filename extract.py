@@ -83,7 +83,7 @@ def create_file(ds, format):
         swir = ds.sel(band = 'swir16')
         NDSI = (green - swir) / (green + swir)
         resampledNDSI = NDSI.resample(time="YS")\
-            .modes("time", keep_attrs=True) # the most frequent value
+            .mean("time", keep_attrs=True) # the most frequent value
         
         with dask.diagnostics.ProgressBar():
             ts = resampledNDSI.compute()
@@ -96,7 +96,7 @@ def create_file(ds, format):
         nir = ds.sel(band = 'nir08')
         NDWI = (green - nir) / (green + nir)
         resampledNDWI = NDWI.resample(time="YS")\
-            .modes("time", keep_attrs=True) # the most frequent value
+            .mean("time", keep_attrs=True) # the most frequent value
         
         with dask.diagnostics.ProgressBar():
             ts = resampledNDWI.compute()
@@ -109,7 +109,7 @@ def create_file(ds, format):
         red = ds.sel(band = 'red')
         NDGI = (green - red) / (green + red)
         resampledNDGI = NDGI.resample(time="YS")\
-            .modes("time", keep_attrs=True) # the most frequent value
+            .mean("time", keep_attrs=True) # the most frequent value
         
         with dask.diagnostics.ProgressBar():
             ts = resampledNDGI.compute()
@@ -149,13 +149,40 @@ daterange = [
     {"interval": ["2013-09-01T00:00:00Z", "2013-11-01T00:00:00Z"]}, # 8
     {"interval": ["2016-09-01T00:00:00Z", "2016-11-01T00:00:00Z"]}, # 9
     {"interval": ["2019-09-01T00:00:00Z", "2019-11-01T00:00:00Z"]}, # 10
+    {"interval": ["2021-09-01T00:00:00Z", "2021-11-01T00:00:00Z"]}, # refrence
     {"interval": ["2022-09-01T00:00:00Z", "2022-11-01T00:00:00Z"]}] # 11
 #--------------------------------------------------------
 charts = importdata(aoi_BMV, daterange)
+
+check = 0
+r = []
+for i, c in zip(charts, range(len(charts))):
+    if i.datetime.year == 2021:
+        print(i, c)
+        if check == 0:
+            ref = pystac.ItemCollection(items= [charts[c]])
+            print('done')
+            check += 1
+        else:
+            ref = ref + pystac.ItemCollection(items= [charts[c]])  
+        print('check')
+
+        r.append(i)
+
+    else: continue
+
+for rem in r:
+    charts.items.remove(rem)
+print(f'length train: {len(ref)} length charts: {len(charts)}')
 #--------------------------------------------------------
 ds = stackstac.stack(planetary_computer.sign(charts), epsg=6207)
+df = stackstac.stack(planetary_computer.sign(ref), epsg=6207)
 
 xmin, xmax, ymin, ymax = 86.441784772,87.420108894,26.867723927,28.196017654 # Set to a small area to limit computation time.
 ds = ds.loc[:,:, ymax:ymin,xmin:xmax]
+df = df.loc[:,:, ymax:ymin,xmin:xmax]
 #----------------------------------------------------------
 create_file(ds = ds, format = format)
+print('charts done')
+create_file(ds = df, format= format)
+print('ref done')
