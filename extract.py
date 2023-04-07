@@ -149,15 +149,16 @@ daterange = [
     {"interval": ["2013-09-01T00:00:00Z", "2013-11-01T00:00:00Z"]}, # 8
     {"interval": ["2016-09-01T00:00:00Z", "2016-11-01T00:00:00Z"]}, # 9
     {"interval": ["2019-09-01T00:00:00Z", "2019-11-01T00:00:00Z"]}, # 10
-    {"interval": ["2021-09-01T00:00:00Z", "2021-11-01T00:00:00Z"]}, # refrence
-    {"interval": ["2022-09-01T00:00:00Z", "2022-11-01T00:00:00Z"]}] # 11
+    {"interval": ["2022-09-01T00:00:00Z", "2022-11-01T00:00:00Z"]}, # 11
+    {"interval": ["2009-09-01T00:00:00Z", "2009-11-01T00:00:00Z"]}, # train
+    {"interval": ["2009-09-01T00:00:00Z", "2009-11-01T00:00:00Z"]}] # validation
 #--------------------------------------------------------
 charts = importdata(aoi_BMV, daterange)
 
 check = 0
 r = []
 for i, c in zip(charts, range(len(charts))):
-    if i.datetime.year == 2021:
+    if i.datetime.year == 2009:
         #print(i, c)
         if check == 0:
             ref = pystac.ItemCollection(items= [charts[c]])
