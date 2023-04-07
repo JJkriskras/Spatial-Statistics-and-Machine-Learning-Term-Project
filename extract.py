@@ -77,7 +77,7 @@ def importdata(aoi, daterange):
 
 #--------------------------------------------------------------------------
 #--------------------------------------------------------------------------
-def create_file(ds, format):
+def create_file(ds, format, datause = ''):
     if format == 1:
         green = ds.sel(band = 'green')
         swir = ds.sel(band = 'swir16')
@@ -88,7 +88,7 @@ def create_file(ds, format):
         with dask.diagnostics.ProgressBar():
             ts = resampledNDSI.compute()
 
-        ts.rio.to_raster(pjoin(scratch_dir, 'resampledNDSI.tif'), compress='LZW')
+        ts.rio.to_raster(pjoin(scratch_dir,datause, 'resampledNDSI.tif'), compress='LZW')
         print('NDSI done')
     #---------------------------------------------
     elif format == 2:
@@ -101,7 +101,7 @@ def create_file(ds, format):
         with dask.diagnostics.ProgressBar():
             ts = resampledNDWI.compute()
 
-        ts.rio.to_raster(pjoin(scratch_dir, 'resampledNDWI.tif'), compress='LZW')
+        ts.rio.to_raster(pjoin(scratch_dir, datause,'resampledNDWI.tif'), compress='LZW')
         print('NDWI done')     
     #---------------------------------------------   
     elif format == 3:
@@ -114,7 +114,7 @@ def create_file(ds, format):
         with dask.diagnostics.ProgressBar():
             ts = resampledNDGI.compute()
 
-        ts.rio.to_raster(pjoin(scratch_dir, 'resampledNDGI.tif'), compress='LZW')
+        ts.rio.to_raster(pjoin(scratch_dir,datause, 'resampledNDGI.tif'), compress='LZW')
         print('NDGI done') 
     else: pass
 #-------------------------------------------------------------------------
@@ -186,5 +186,5 @@ df = df.loc[:,:, ymax:ymin,xmin:xmax]
 #----------------------------------------------------------
 create_file(ds = ds, format = format)
 print('charts done')
-create_file(ds = df, format= format)
+create_file(ds = df, format= format, datause='train_data_')
 print('ref done')
