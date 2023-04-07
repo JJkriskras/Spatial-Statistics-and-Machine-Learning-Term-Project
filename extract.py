@@ -158,14 +158,14 @@ check = 0
 r = []
 for i, c in zip(charts, range(len(charts))):
     if i.datetime.year == 2021:
-        print(i, c)
+        #print(i, c)
         if check == 0:
             ref = pystac.ItemCollection(items= [charts[c]])
-            print('done')
+            #print('done')
             check += 1
         else:
             ref = ref + pystac.ItemCollection(items= [charts[c]])  
-        print('check')
+        #print('check')
 
         r.append(i)
 
