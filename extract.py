@@ -15,9 +15,7 @@ import pystac
 from pystac_client import Client
 import pystac.item_collection as pyic
 import planetary_computer
-import requests
 import stackstac
-import rich.table
 import dask.diagnostics
 scratch_dir = './data' 
 import planetary_computer as pc
