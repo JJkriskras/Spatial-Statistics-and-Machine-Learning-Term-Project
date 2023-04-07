@@ -86,7 +86,7 @@ def create_file(ds, format, datause = ''):
         with dask.diagnostics.ProgressBar():
             ts = resampledNDSI.compute()
 
-        ts.rio.to_raster(pjoin(scratch_dir,datause, 'resampledNDSI.tif'), compress='LZW')
+        ts.rio.to_raster(pjoin(scratch_dir,datause+'resampledNDSI.tif'), compress='LZW')
         print('NDSI done')
     #---------------------------------------------
     elif format == 2:
@@ -99,7 +99,7 @@ def create_file(ds, format, datause = ''):
         with dask.diagnostics.ProgressBar():
             ts = resampledNDWI.compute()
 
-        ts.rio.to_raster(pjoin(scratch_dir, datause,'resampledNDWI.tif'), compress='LZW')
+        ts.rio.to_raster(pjoin(scratch_dir, datause+'resampledNDWI.tif'), compress='LZW')
         print('NDWI done')     
     #---------------------------------------------   
     elif format == 3:
@@ -112,7 +112,7 @@ def create_file(ds, format, datause = ''):
         with dask.diagnostics.ProgressBar():
             ts = resampledNDGI.compute()
 
-        ts.rio.to_raster(pjoin(scratch_dir,datause, 'resampledNDGI.tif'), compress='LZW')
+        ts.rio.to_raster(pjoin(scratch_dir,datause + 'resampledNDGI.tif'), compress='LZW')
         print('NDGI done') 
     else: pass
 #-------------------------------------------------------------------------
@@ -173,7 +173,7 @@ for i, c in zip(charts, range(len(charts))):
 
 for rem in r:
     charts.items.remove(rem)
-print(f'length train: {len(ref)} length charts: {len(charts)}')
+print(f'length train: {len(ref)} \nlength charts: {len(charts)}')
 #--------------------------------------------------------
 ds = stackstac.stack(planetary_computer.sign(charts), epsg=6207)
 df = stackstac.stack(planetary_computer.sign(ref), epsg=6207)
