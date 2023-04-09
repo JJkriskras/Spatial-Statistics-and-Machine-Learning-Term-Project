@@ -178,7 +178,8 @@ print(f'length train: {len(ref)} \nlength charts: {len(charts)}')
 ds = stackstac.stack(planetary_computer.sign(charts), epsg=6207)
 df = stackstac.stack(planetary_computer.sign(ref), epsg=6207)
 
-xmin, xmax, ymin, ymax = 86.441784772,87.420108894,26.867723927,28.196017654 # Set to a small area to limit computation time.
+# Set to a small area in espg 6207 bto limit computation time.
+xmin, xmax, ymin, ymax = 86.441784772,87.420108894,26.867723927,28.196017654 
 ds = ds.loc[:,:, ymax:ymin,xmin:xmax]
 df = df.loc[:,:, ymax:ymin,xmin:xmax]
 #----------------------------------------------------------
