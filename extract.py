@@ -67,7 +67,7 @@ def importdata(aoi, daterange):
 
         items = search.get_all_items()
         print(t,'items: ',len(items))
-        charts = charts+items
+        charts += items
         
 
     print('Length total item set:',len(charts)) 
