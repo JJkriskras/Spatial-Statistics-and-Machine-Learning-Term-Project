@@ -148,24 +148,33 @@ daterange = [
     {"interval": ["2016-09-01T00:00:00Z", "2016-11-01T00:00:00Z"]}, # 9
     {"interval": ["2019-09-01T00:00:00Z", "2019-11-01T00:00:00Z"]}, # 10
     {"interval": ["2022-09-01T00:00:00Z", "2022-11-01T00:00:00Z"]}, # 11
-    {"interval": ["2009-09-01T00:00:00Z", "2009-11-01T00:00:00Z"]}#, # train
-   # {"interval": ["2009-09-01T00:00:00Z", "2009-11-01T00:00:00Z"]} # validation
+    {"interval": ["2009-09-01T00:00:00Z", "2009-11-01T00:00:00Z"]}, # train
+    {"interval": ["1999-09-01T00:00:00Z", "1999-11-01T00:00:00Z"]} # validation
 ]
 #--------------------------------------------------------
 charts = importdata(aoi_BMV, daterange)
 
-check = 0
+traincheck,valcheck = 0, 0
 r = []
 for i, c in zip(charts, range(len(charts))):
     if i.datetime.year == 2009:
         #print(i, c)
-        if check == 0:
-            ref = pystac.ItemCollection(items= [charts[c]])
+        if traincheck == 0:
+            train = pystac.ItemCollection(items= [charts[c]])
             #print('done')
-            check += 1
+            traincheck += 1
         else:
-            ref = ref + pystac.ItemCollection(items= [charts[c]])  
+            train += pystac.ItemCollection(items= [charts[c]])  
         #print('check')
+
+        r.append(i)
+
+    elif i.datetime.year == 1999:
+        if valcheck == 0:
+            val = pystac.ItemCollection(items= [charts[c]])
+            valcheck += 1
+        else:
+            val += pystac.ItemCollection(items= [charts[c]])  
 
         r.append(i)
 
@@ -173,17 +182,21 @@ for i, c in zip(charts, range(len(charts))):
 
 for rem in r:
     charts.items.remove(rem)
-print(f'length train: {len(ref)} \nlength charts: {len(charts)}')
+print(f'length train: {len(train)} \nlength val: {len(val)}\nlength charts: {len(charts)}')
 #--------------------------------------------------------
 ds = stackstac.stack(planetary_computer.sign(charts), epsg=6207)
-df = stackstac.stack(planetary_computer.sign(ref), epsg=6207)
+dt = stackstac.stack(planetary_computer.sign(train), epsg=6207)
+dv = stackstac.stack(planetary_computer.sign(val), epsg=6207)
 
 # Set to a small area in espg 6207 bto limit computation time.
 xmin, xmax, ymin, ymax = 86.441784772,87.420108894,26.867723927,28.196017654 
 ds = ds.loc[:,:, ymax:ymin,xmin:xmax]
-df = df.loc[:,:, ymax:ymin,xmin:xmax]
+dt = dt.loc[:,:, ymax:ymin,xmin:xmax]
+dv = dv.loc[:,:, ymax:ymin,xmin:xmax]
 #----------------------------------------------------------
 create_file(ds = ds, format = format)
 print('charts done')
-create_file(ds = df, format= format, datause='train_data_')
-print('ref done')
+create_file(ds = dt, format= format, datause='train_data_')
+print('train done')
+create_file(ds = dv, format= format, datause='validation_data_')
+print('val done')
