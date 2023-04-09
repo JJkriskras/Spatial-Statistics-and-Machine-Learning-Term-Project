@@ -188,7 +188,7 @@ ds = stackstac.stack(planetary_computer.sign(charts), epsg=6207)
 dt = stackstac.stack(planetary_computer.sign(train), epsg=6207)
 dv = stackstac.stack(planetary_computer.sign(val), epsg=6207)
 
-# Set to a small area in espg 6207 bto limit computation time.
+# Set to a small area in espg 6207 to limit computation time.
 xmin, xmax, ymin, ymax = 86.441784772,87.420108894,26.867723927,28.196017654 
 ds = ds.loc[:,:, ymax:ymin,xmin:xmax]
 dt = dt.loc[:,:, ymax:ymin,xmin:xmax]
